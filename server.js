@@ -8,13 +8,18 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// === ROOT CHECK ===
+app.get("/", (req, res) => {
+  res.send("🧠 WRG backend is live!");
+});
+
 // === NEYNAR USER VERIFY ===
 app.get("/api/verifyUser/:fid", async (req, res) => {
   try {
     const fid = req.params.fid;
     const response = await fetch(
       `https://api.neynar.com/v2/farcaster/user/bulk?fids=${fid}`,
-      { headers: { "api_key": process.env.NEYNAR_API_KEY } }
+      { headers: { "X-Api-Key": process.env.NEYNAR_API_KEY } }
     );
     const data = await response.json();
     const user = data.users?.[0];
@@ -122,7 +127,7 @@ app.post("/api/mintBadge", async (req, res) => {
 
     res.json({
       success: true,
-      mintUrl: `https://zora.co/collect/${data.contract_address}/${data.token_id}`,
+      mintUrl: `https://zora.co/collect/${data.contract_address}:${data.token_id}`,
     });
   } catch (err) {
     console.error("mintBadge error:", err);
